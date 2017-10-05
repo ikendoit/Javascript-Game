@@ -9,62 +9,64 @@ let ctx = canvas.getContext("2d");
 //create classes, functions 
 
 //class: pet
-function Pet(x,y,food) {
-	//init pet, position x+y , age 0, speed, food(our cursor) .....
-	this.x = x ; 
-	this.y = y ; 
+function Pet(initx, inity, initfood) {
+	//init pet, position x+y , age 1, speed, food(our cursor) .....
+	this.x = initx ; 
+	this.y = inity ; 
 	this.vecX = 0;
 	this.vecY = 0;
-	this.age = 0 ; 
-	this.speed = 2 ;
+	this.age = 1 ; 
+	this.speed = 1 ;
 	this.atWall = false;
-	this.food = food;
+	this.food = initfood;
 	this.form = function(){
 		switch (this.age) {
-			case 0 : return "small"; 
-			case 1 : return "medium";
-			case 2 : return "big";
+			case 1 : return "small"; 
+			case 2 : return "medium";
+			case 3 : return "big";
 			default : return "none";
 		}
 	}
 	// functions: move, touch food, lay eggs, poops,... 
 	// ************************************************
-	//
+	
 	// move the pet according to food's position and check if has caught food)
 	this.move =function() {
 		//check if pet is at the wall
 		//if atWall -> move to food, no longer at wall 
-		if (!this.atWall){
-			console.log("moving is workdint");
-			ctx.fillStyle="red";
-			ctx.beginPath();
-			ctx.arc(this.x,this.y,40,0,2*Math.PI);
-			ctx.fill();
-			this.vecX = (this.x - this.food.x)/this.speed;
-			this.vecY = (this.y - this.food.y)/this.speed; 
+		if (this.atWall){
+			//calculate coordinate
+			let foodX = this.food.getX();
+			let foodY = this.food.getY();
+			this.vecX = this.speed*(this.x - foodX)/Math.sqrt(Math.abs(this.x*this.x - foodX*foodX));
+			this.vecY = this.speed*(this.y - foodY)/Math.sqrt(Math.abs(this.y*this.y - foodY*foodY));
+			
+			//if has reached a wall, stop, re-coordinate . 
+			if (this.x == 0 || this.y == 0 || this.x == 700 || this.y == 500){
+				console.log("pet at wall");
+				this.atWall = true; 
+				this.vecX = 0 ; 
+				this.vecY = 0 ;
+			}
 			//caught the food : call caught(), get more speed, lay an egg
-			if (this.x == this.food.x && this.y == this.food.y){
+			if ((this.x-20)*this.age <= foodX && (this.x+20)*this.age >= foodX && (this.y-20)*this.age <= foodY && (this.y+20)*this.age >= foodY){
 				caught(this.food);
 				layEgg();
 				this.speed++;
+				vecX=0;
+				vecY=0;
 				
 			}
-			atWall = false;
+			this.atWall = false;
 		}
-
-		//if has reached a wall, stop, re-coordinate . 
-		if (this.x == 0 || this.y == 0 || this.x == 700 || this.y == 500){
-			console.log("pet at wall");
-			atWall = true; 
-			vecX = 0 ; 
-			vecY = 0 ;
-		}
+		console.log(this.atWall);
+		
 	}
 
 	// got some food
 	// food shall lose health.
 	this.caught = function(){
-		console.log("caught !!!!");
+		console.log("caught it !!!!");
 		this.food.lost();
 	}
 
@@ -74,7 +76,20 @@ function Pet(x,y,food) {
 		miniPet = new Pet(this.x,this.y,this.food);
 	}
 
-	this.interval = setInterval(this.move,1000);
+	this.interval = setInterval(() =>{
+		this.move();
+
+		this.x -= this.vecX;
+		this.y -= this.vecY;
+
+		ctx.fillStyle="red";
+		ctx.beginPath();
+		ctx.arc(this.x,this.y,20*this.age,0,2*Math.PI);
+		ctx.fill();
+
+	},20);
+
+
 }
 
 //class : food 
@@ -83,6 +98,7 @@ function Food(){
 	this.x = 100;
 	this.y = 100;
 	this.hp = 11;
+	this.isStuck = false;
 
 	//functions :update position,  lost hp , stuck in poop , .... 
 	//******************************************************************************
@@ -93,8 +109,17 @@ function Food(){
 		ctx.fillStyle="Blue";
 		ctx.arc(this.x,this.y, 10, 0, 2*Math.PI);
 		ctx.fill();
+
 		this.x = evt.clientX - rect.left;
 		this.y = evt.clientY - rect.top;
+	}
+
+	this.getX = function(){
+		return this.x;
+	}
+
+	this.getY = function(){
+		return this.y;
 	}
 
 	//lost 1 hp
@@ -112,9 +137,20 @@ clear = function(){
 	ctx.clearRect(0,0,canvas.width,canvas.height);
 }
 
-draw = function(){
+draw = function(food){
 	console.log("clearing in interval");
-	this.interval = setInterval(clear, 20);
+	this.interval = setInterval(()=>{
+		clear();
+		//food
+		ctx.beginPath();
+		ctx.fillText(0,20,food.hp);
+		ctx.fill();
+		
+		
+		if (food.isStuck){
+			//draw image of food stuck
+		}
+	}, 100);
 }
 
 
@@ -122,8 +158,9 @@ draw = function(){
 //starting the game 
 
 //init objects
-let food = new Food();
-let myPet = new Pet(0,0,food);
+var food = new Food();
+var myPet = new Pet(0,0,food);
+
 
 //check mouse movement
 canvas.addEventListener("mousemove",function(evt){
@@ -131,6 +168,6 @@ canvas.addEventListener("mousemove",function(evt){
 });
 
 //re-draw the game
-draw();
+draw(food);
 
 
