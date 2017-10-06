@@ -1,0 +1,3 @@
+22:10 Wed Create system : Object Orientation, 2 classes Pet + Food, set draw() and update(), set canvas. 
+
+14:49 Thu changed vector system.
