@@ -14,3 +14,5 @@ Problems:
 
       **Solution:
 
+        -   update cursor position whenever checking for pet.caught()
+

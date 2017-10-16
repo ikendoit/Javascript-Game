@@ -37,7 +37,7 @@ function Pet(initx, inity, initfood) {
 		//if atWall -> move to food, no longer at wall 
                 
         //if has reached a wall, stop, re-coordinate . 
-        if ( this.x <= 0 || this.y <= 0 || this.x >= 695 || this.y >= 495 ){
+        if ( this.x <= 0 || this.y <= 0 || this.x >= 495 || this.y >= 495 ){
             //get coordinate
 			this.foodX = this.food.getX();
 			this.foodY = this.food.getY();
@@ -61,18 +61,17 @@ function Pet(initx, inity, initfood) {
 	// food shall lose health.
 	//caught the food : call caught(), get more speed, lay an egg
 	this.caught = function(){
-
-        let x_dis = Math.abs(this.x-this.foodX);
-        let y_dis = Math.abs(this.y-this.foodY);
+        let x_dis = Math.abs(this.x-this.food.getX());
+        let y_dis = Math.abs(this.y-this.food.getY());
         if ( (10+this.form*20) > Math.sqrt((x_dis*x_dis) + (y_dis*y_dis))) {
-            //console.log("caught it !!!! : ");
-            //console.log(this.foodX+"  "+this.x);
-            //console.log(this.foodY+"  "+this.y);
+            console.log("caught it !!!! : ");
             
-        	//this.layEgg();
-            //this.egging = true; 
-            if (this.speed <= 25) {
-                this.speed+=3;
+            if (( this.food.hp % 5) == 0 ) { 
+                this.layEgg();
+                this.egging = true; 
+                if (this.speed <= 25) {
+                    this.speed+=1.5;
+                }
             }
 
             this.food.lost();
@@ -91,10 +90,7 @@ function Pet(initx, inity, initfood) {
         this.egging = false;
 	}
 
-	this.interval = setInterval(() =>{
-
-	},10);
-}
+}	
 
 //class : food 
 function Food(){
@@ -143,13 +139,16 @@ clear = function(){
 }
 
 draw = function(food,pet){
+    let timer = 0 ;
 	this.interval = setInterval(()=>{
+        timer+=0.025
 		clear();
-
 		//food
         //hp 
 		ctx.beginPath();
+        ctx.font = "25px Arial";
 		ctx.fillText(food.getHp(),20,20);
+        ctx.fillText(Math.floor(timer),20,40);
 		ctx.fill();
         //object
         ctx.beginPath();
@@ -170,12 +169,12 @@ draw = function(food,pet){
             ctx.arc(pet.x,pet.y,20*pet.form,0,2*Math.PI);
             ctx.fill();
 
-            //if (pet.egging) {
-            //    ctx.fillStyle="purple";
-            //    ctx.beginPath();
-            //    ctx.arc(pet.x,pet.y,20*pet.form,0,2*Math.PI);
-            //    ctx.fill();
-            //}
+            if (pet.egging) {
+                ctx.fillStyle="purple";
+                ctx.beginPath();
+                ctx.arc(pet.x,pet.y,20*pet.form,0,2*Math.PI);
+                ctx.fill();
+            }
         });
             
 	}, 40);
