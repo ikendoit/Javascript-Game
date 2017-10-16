@@ -38,7 +38,7 @@ function Pet(initx, inity, initfood) {
                 
         //if has reached a wall, stop, re-coordinate . 
         if ( this.x <= 0 || this.y <= 0 || this.x >= 695 || this.y >= 495 ){
-            //calculate coordinate
+            //get coordinate
 			this.foodX = this.food.getX();
 			this.foodY = this.food.getY();
 
@@ -46,20 +46,13 @@ function Pet(initx, inity, initfood) {
             if (this.x != this.foodX || this.y != this.foodY){
                 this.distance = parseFloat(Math.sqrt(Math.pow((this.foodX - this.x),2) + Math.pow((this.foodY - this.y),2))) 
             } 
-            if (this.x == this.foodX) {
-                this.vecX = 0 ; 
-            } else {
-                this.vecX = this.speed*(this.x - this.foodX)/(this.distance);  
-            }
 
-            if (this.y == this.foodY) {
-                this.vecY = 0 ;
-            }else {
-                this.vecY = this.speed*(this.y - this.foodY)/(this.distance);
-            }
+            this.vecX = this.speed*(this.x - this.foodX)/(this.distance);  
+            this.vecY = this.speed*(this.y - this.foodY)/(this.distance);
         }
 	
         //catches food
+        //
         this.caught();
     
 	}
@@ -68,18 +61,24 @@ function Pet(initx, inity, initfood) {
 	// food shall lose health.
 	//caught the food : call caught(), get more speed, lay an egg
 	this.caught = function(){
-        if ((parseFloat(this.x-5) < parseFloat(this.foodX)) && (parseFloat(this.x+5) > parseFloat(this.foodX)) && (parseFloat(this.y-5) < parseFloat(this.foodY)) && (parseFloat(this.y+5) > parseFloat(this.foodY))){
+
+        let x_dis = Math.abs(this.x-this.foodX);
+        let y_dis = Math.abs(this.y-this.foodY);
+        if ( (10+this.form*20) > Math.sqrt((x_dis*x_dis) + (y_dis*y_dis))) {
             //console.log("caught it !!!! : ");
             //console.log(this.foodX+"  "+this.x);
             //console.log(this.foodY+"  "+this.y);
-            this.food.lost();
-            if (this.age != 31){
-                this.age+=1;
-            }
+            
         	//this.layEgg();
             //this.egging = true; 
-            if (this.speed <= 25) { 
+            if (this.speed <= 25) {
                 this.speed+=3;
+            }
+
+            this.food.lost();
+
+            if (this.age != 31){
+                this.age+=1;
             }
         }
 	}
@@ -155,7 +154,7 @@ draw = function(food,pet){
         //object
         ctx.beginPath();
         ctx.filStyle="blue";
-        ctx.arc(food.getX(),food.getY(),10,0,2*Math.PI);
+        ctx.arc(food.getX(),food.getY(),20,0,2*Math.PI);
         ctx.fill();
 		
 		if (food.isStuck){

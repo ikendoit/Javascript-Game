@@ -1,3 +1,16 @@
 22:10 Wed Create system : Object Orientation, 2 classes Pet + Food, set draw() and update(), set canvas. 
 
 14:49 Thu changed vector system.
+
+
+Problems:
+
+    1.  Collision : 
+
+      **Problems:
+
+        -   when the cursor move, even if 100px away from the pet, we still lose HP.
+        -   when the cursor is at special diagonal positions to the pet, we still lost HP
+
+      **Solution:
+
