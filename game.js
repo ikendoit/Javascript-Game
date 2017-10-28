@@ -17,7 +17,7 @@ clear = function(){
 draw = function(food,pet){
     let timer = 0 ;
 	this.interval = setInterval(()=>{
-        timer+=0.025
+        timer+=0.04
 		clear();
 		//food
         //hp 
@@ -39,11 +39,13 @@ draw = function(food,pet){
             pet.move();
             pet.x -= parseFloat(pet.vecX);
             pet.y -= parseFloat(pet.vecY);
-            ctx.fillStyle="gray";
+            ctx.beginPath();
+            ctx.fillStyle="purple";
             ctx.lineWidth=0.00005;
             ctx.beginPath();
             ctx.arc(pet.x,pet.y,20*pet.form,0,2*Math.PI);
             ctx.stroke();
+            ctx.fill();
 
             if (pet.egging) {
                 ctx.fillStyle="purple";

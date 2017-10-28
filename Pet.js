@@ -5,7 +5,7 @@ function Pet(initx, inity, initfood) {
 	this.x = initx; 
 	this.y = inity; 
     this.age = 1; 
-	this.speed = 10;
+	this.speed = 15;
     this.foodX = this.food.getX();
     this.foodY = this.food.getY();
     this.distance = parseFloat(Math.sqrt(Math.pow((this.foodX - this.x),2) + Math.pow((this.foodY - this.y),2))) 
@@ -19,13 +19,13 @@ function Pet(initx, inity, initfood) {
 	// functions: move, touch food, lay eggs, poops,... 
 	// ************************************************
 	
-	// move the pet according to food's position and check if has caught food)
+	// move the pet according to food's position and check if has hit food)
 	this.move =function() {
 		//check if pet is at the wall
 		//if atWall -> move to food, no longer at wall 
                 
         //if has reached a wall, stop, re-coordinate . 
-        if ( this.x <= 0 || this.y <= 0 || this.x >= 495 || this.y >= 495 ){
+        if ( this.x <= 0 || this.y <= 0 || this.x >= 695 || this.y >= 595 ){
             //get coordinate
 			this.foodX = this.food.getX();
 			this.foodY = this.food.getY();
@@ -41,18 +41,18 @@ function Pet(initx, inity, initfood) {
 	
         //catches food
         //
-        this.caught();
+        this.hit();
     
 	}
 
 	// got some food
 	// food shall lose health.
-	//caught the food : call caught(), get more speed, lay an egg
-	this.caught = function(){
+	// hit the food : call hit(), get more speed, lay an egg
+	this.hit = function(){
         let x_dis = Math.abs(this.x-this.food.getX());
         let y_dis = Math.abs(this.y-this.food.getY());
         if ( (10+this.form*20) > Math.sqrt((x_dis*x_dis) + (y_dis*y_dis))) {
-            console.log("caught it !!!! : ");
+            console.log("hit it !!!! : ");
             
             if (( this.food.hp % 5) == 0 ) { 
                 this.layEgg();
@@ -78,5 +78,3 @@ function Pet(initx, inity, initfood) {
         this.egging = false;
 	}
 }	
-
-
