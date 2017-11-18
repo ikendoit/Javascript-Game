@@ -14,9 +14,9 @@ function Pet(initx, inity, initfood) {
 
     this.vecY = this.speed*(this.y - this.foodY)/(this.distance);
 	this.atWall = true;
-    this.egging = false;
+    this.changeLight = false;
 	this.form = 1+parseInt(this.age/10);
-	// functions: move, touch food, lay eggs, poops,... 
+	// functions: move, touch food, poops,... 
 	// ************************************************
 	
 	// move the pet according to food's position and check if has hit food)
@@ -25,7 +25,10 @@ function Pet(initx, inity, initfood) {
 		//if atWall -> move to food, no longer at wall 
                 
         //if has reached a wall, stop, re-coordinate . 
-        if ( this.x <= 0 || this.y <= 0 || this.x >= 695 || this.y >= 595 ){
+        let comp = 50; // compensation for right/bottom wall
+        let canvasW = 700;
+        let canvasH = 600;
+        if ( this.x <= 0 || this.y <= 0 || this.x >= (canvasW-comp) || this.y >= (canvasH-comp) ){
             //get coordinate
 			this.foodX = this.food.getX();
 			this.foodY = this.food.getY();
@@ -47,18 +50,17 @@ function Pet(initx, inity, initfood) {
 
 	// got some food
 	// food shall lose health.
-	// hit the food : call hit(), get more speed, lay an egg
+	// hit the food : call hit(), get more speed, change Shadow light
 	this.hit = function(){
         let x_dis = Math.abs(this.x-this.food.getX());
         let y_dis = Math.abs(this.y-this.food.getY());
         if ( (10+this.form*20) > Math.sqrt((x_dis*x_dis) + (y_dis*y_dis))) {
-            console.log("hit it !!!! : ");
+           // console.log("hit it !!!! : ");
             
             if (( this.food.hp % 5) == 0 ) { 
-                this.layEgg();
-                this.egging = true; 
-                if (this.speed <= 25) {
-                    this.speed+=1.5;
+                this.changeLight = true; 
+                if (this.speed <= 50) {
+                    this.speed+=3;
                 }
             }
 
@@ -70,11 +72,7 @@ function Pet(initx, inity, initfood) {
         }
 	}
 
-	// lay egg : 
-	this.layEgg = function(){
-		console.log("laid an egg");
-        miniPet = new Pet(0,0,this.food);
-        pets.push(miniPet);
-        this.egging = false;
-	}
+    this.poop = function(){
+        return new Poop(this.x, this.y,this.food);
+    }
 }	
