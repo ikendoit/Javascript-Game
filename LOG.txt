@@ -15,4 +15,35 @@ Problems:
       **Solution:
 
         -   update cursor position whenever checking for pet.caught()
+		-	updated Algorithm for hit detection, now everything works
 
+Nov-15th: 
+
+	-	Added Poop (Obstacle), if touched will immobilize the bone for 3 seconds 
+
+	-	Added Pause Start screen, press Space and everything pauses/starts 
+
+	-	TODO: animation, front-end for game, Pause-Start Screen
+
+Nov-16th : 
+
+	-	Added: Support : Wipe (Obstacle - Dog) or Slow Dog
+
+	-	TODO: animation, sprites, front-end
+
+Nov-20th :
+
+	- 	Put some functions into functions
+	
+	-	Seperates main code with functions
+	
+	-	Added a start logo/screen
+	
+		TODO: display background img
+		
+	-	Added score system 
+	
+	-	Done Score inrease/decrese when collision
+		
+	TODO: Find sprites for poop, supports
+	
