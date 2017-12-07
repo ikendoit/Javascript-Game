@@ -23,13 +23,9 @@ Nov-15th:
 
 	-	Added Pause Start screen, press Space and everything pauses/starts 
 
-	-	TODO: animation, front-end for game, Pause-Start Screen
-
 Nov-16th : 
 
 	-	Added: Support : Wipe (Obstacle - Dog) or Slow Dog
-
-	-	TODO: animation, sprites, front-end
 
 Nov-20th :
 
@@ -39,11 +35,15 @@ Nov-20th :
 	
 	-	Added a start logo/screen
 	
-		TODO: display background img
-		
 	-	Added score system 
 	
 	-	Done Score inrease/decrese when collision
-		
-	TODO: Find sprites for poop, supports
+	
+Nov-29th :
+
+	-	Did support sprites
+	
+	- 	Restart function
+	
+	- 	Fixed documentation
 	

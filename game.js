@@ -4,60 +4,70 @@ let canvas = document.getElementById("game");
 let ctx = canvas.getContext("2d");
 
 //manage all instances of pets
-let pets = [];
+let gameOn = true;
 
+
+
+let pets = [];
+	
 //manage all instances of Supports, Bombs 
 let poops = [] ;
 let supports = [];
-
+	
 //init objects
 var food = new Food();
 //Pet will be init in interval
-
+	
 //for game pause, start
-let gameOn = false;
 let gameInv ;
 let cycle = 0;
 
 //2**************************************************2
 //create classes, functions 
 
-// Load necessary imgs
-let foodImg = new Image();
-foodImg.src = "bone.png"; 
 
-let dog = new Image();
-dog.src = "dogss.png";
+//***************************************** 
+// Draws an image with ref to canvas 2d context
+function drawImage(img, x, y, width, height) {
+	ctx.drawImage(img, x, y, width, height);
+}
 
 let backgroundImg = new Image();
 backgroundImg.src = "back.jpeg";
+backgroundImg.onload = function() {
+	ctx.font = "45px Arial";
+	drawImage(backgroundImg, 0, 0, canvas.width, canvas.height);
 
-let poopImg = new Image();
-poopImg.src = "poop.png";
+	// this gradient scheme was found from w3schools.com
+	// https://www.w3schools.com/tags/canvas_stroketext.asp
+	var gradient=ctx.createLinearGradient(0,0,canvas.width,0);
+	gradient.addColorStop("0","magenta");
+	gradient.addColorStop("0.5","blue");
+	gradient.addColorStop("1.0","red");
+	ctx.fillStyle=gradient;
+	ctx.shadowColor = "purple";
+	ctx.shadowBlur = 20;
+	ctx.fillText("DOGS FLYING IN SPACE", 100, 190);
+	ctx.font = "13px Arial";
+	ctx.shadowBlur = 0;
+	ctx.fillStyle = "white";
+	ctx.fillText("CPSC 1045 Jamie McKee-Scott Fall 2017", 100, 215);
+	ctx.fillStyle = "white";
+	ctx.fillText("Kien Nguyen & Jackson Situ", 100, 237);
+}
 
-ctx.font = "45px Arial";
 
-// this gradient colour is directly copied from w3schools.com
-// https://www.w3schools.com/tags/canvas_stroketext.asp
-var gradient=ctx.createLinearGradient(0,0,canvas.width,0);
-gradient.addColorStop("0","magenta");
-gradient.addColorStop("0.5","blue");
-gradient.addColorStop("1.0","red");
-ctx.strokeStyle=gradient;
-ctx.strokeText("DOGS FLYING IN SPACE", 100, 190);
-ctx.font = "13px Arial";
-ctx.strokeText("CPSC 1045 Jamie McKee-Scott Fall 2017", 100, 215);
-ctx.strokeText("Kien Nguyen & Jackson Situ", 100, 237);
-
-
+//***************************************** 
+// Clear canvas
 clear = function(){
 	ctx.clearRect(0,0,canvas.width,canvas.height);
 }
 
 
+//***************************************** 
+// Draws timer and score at the top of canvas
 let timer = 0;
 let score = 0;
-
 function drawHUD() {
 	// draw timer
 	ctx.beginPath();
@@ -74,7 +84,11 @@ function drawHUD() {
 	ctx.fill();
 }
 
+
+//***************************************** 
 // Draws the food and hp status
+let foodImg = new Image();
+foodImg.src = "sprites/bone.png"; 
 function drawFood(isStuck, img) {
 	ctx.beginPath();
 	ctx.font = "15px Arial bold";
@@ -95,10 +109,9 @@ function drawFood(isStuck, img) {
 	ctx.fill();
 }
 
-function drawImage(img, x, y, width, height) {
-	ctx.drawImage(img, x, y, width, height);
-}
 
+//***************************************** 
+// When player intersects a support-do something
 function useSupport(type) {
 	switch (type) {
 		case "wipePoops" : 
@@ -114,7 +127,7 @@ function useSupport(type) {
 		case "slowDogs" : 
 			pets.forEach((pet)=> {
 				score += 500*pets.length;
-				pet.speed = 15;
+				pet.speed = pet.speed/2;
 			});
 			break;
 		case "restoreHP" : 
@@ -128,15 +141,37 @@ function useSupport(type) {
 	}
 }
 
-function drawSupport(support){
-	ctx.beginPath();
-	ctx.fillStyle="pink";
-	ctx.arc(support.x,support.y,support.radius,0,2*Math.PI);
-	ctx.fill();
+//***************************************** 
+// Draw support
+let slow = new Image();
+slow.src = "sprites/slow.png";
+let wipe = new Image();
+wipe.src = "sprites/wipe.png";
+let milk = new Image();
+milk.src = "sprites/milk.png";
+function drawSupport(support, type){
+	switch (type) {
+		case "wipePoops" : 
+			drawImage(wipe, support.x, support.y, support.width, support.height);
+			break;
+		case "wipeDogs" : 
+			drawImage(wipe, support.x, support.y, support.width, support.height);
+			break;
+		case "slowDogs" : 
+			drawImage(slow, support.x, support.y, support.width, support.height);
+			break;
+		case "restoreHP" : 
+			drawImage(milk, support.x, support.y, support.width, support.height);
+			break;
+		default : 
+			console.log("Error drawing support");
+			break;
+	}
 }
 
-//*****************************************
-function doSupports(){
+//***************************************** 
+//Randomly generate supports
+function makeSupports(){
 	//Supports 
 	let supportRan = Math.random()*1000;
 	if (supportRan > 990){
@@ -149,7 +184,7 @@ function doSupports(){
 	//iterate
 	supports.forEach((support,index,object) => {
 		//draw to canvas
-		drawSupport(support);
+		drawSupport(support, support.getProperty());
 		//create support with random property
 		support.obtained();
 		//if support is obtained
@@ -166,10 +201,15 @@ function doSupports(){
 
 }
 
+
 //******************************************
-//PETS 
+// Draw dogss
+let dog = new Image();
+dog.src = "sprites/dogss.png";
+// times to cycle
+let cycleSize = 4
 function drawPets(){
-	//sprite dimensions src=""
+	//sprite dimensions 
 	let sW = 32.3, sH = 32.3;
 	let clipY = sH;
 
@@ -207,8 +247,11 @@ function drawPets(){
 	}
 }
 
+
 //*****************************************
 //Poops
+let poopImg = new Image();
+poopImg.src = "sprites/poop.png";
 function drawPoops(){
 	let remove = -1;
 	poops.forEach((poop,index,object)=> {
@@ -226,14 +269,35 @@ function drawPoops(){
 }
 
 
+//***************************************** 
+// re-initialize game global variables
+function reset() {
+	gameInv = "";
+	gameOn = true;
+	pets = [];
+	poops = [] ;
+	supports = [];
+	food = new Food();
+	score = 0;
+	timer = 0;
+	cycle = 0;
+}
+
+
+//***************************************** 
+// check if game is over. 
+// if score is over 1 million-player wins-return true
+// if health is 0 or less-player loses-return true
 function gameOver(score, health){
-	if (health < 0) {
+	if (health <= 0) {
 		gameOn = false;
 		ctx.beginPath();
 		ctx.font = "25px Arial";
 		ctx.fillStyle = 'rgb(102, 255, 51)';
 		ctx.fillText("lose",canvas.width/2-20,canvas.height/2);    
 		ctx.fill();
+		document.getElementById("instruction").innerHTML="Press space anywhere to RESTART game";
+		return true;
 	} else if (score > 1000000) {
 		gameOn = false;
 		ctx.beginPath();
@@ -241,17 +305,19 @@ function gameOver(score, health){
 		ctx.fillStyle = 'rgb(102, 255, 51)';
 		ctx.fillText("win",canvas.width/2-20,canvas.height/2);    
 		ctx.fill();
-	}
+		document.getElementById("instruction").innerHTML="Press space anywhere to RESTART game";
+		return true;
 
+	}
+	return false;
 }
 
-//pause, start of game
+
+//***************************************** 
+//listen to space key
 document.addEventListener("keypress" , function(e){
 	if (e.keyCode == 32){
-		//change state of game
-		gameOn = !gameOn;
-
-        //Stop the game
+		
 		if (gameInv) {
 			document.getElementById("instruction").innerHTML="Press space anywhere to START game";
 			//stop interval (Game)
@@ -268,36 +334,38 @@ document.addEventListener("keypress" , function(e){
 		} else {
 			document.getElementById("instruction").innerHTML="Press space anywhere to STOP game";
 
-			//check mouse movement
-			canvas.addEventListener("mousemove",function(evt){
-				//update mouse position of Bone sprite
-				food.updPos(canvas,evt);
-			});
-
-            //************************************************
-            //game Interval
-			gameInv = setInterval(()=>{
-				//timer management
-				timer+=0.04;
-				clear();
-				
-				drawImage(backgroundImg, 0, 0, canvas.width, canvas.height);
-				drawHUD();
-
-				drawFood(food.isStuck, foodImg);
-
-				drawPets();
-
-				drawPoops();
-                
-				doSupports();
-                
-				//check gameover
-				gameOver(score,food.hp);
-
-				cycle = (cycle+1) % 4;
-			}, 60);
+            // play
+			start();
 		}
 	}
 });
 
+
+//***************************************** 
+// add mouse listener
+// set game interval
+function start() {
+	canvas.addEventListener("mousemove",function(evt){
+		//update mouse position of Bone sprite
+		food.updPos(canvas,evt);
+	});
+	gameInv = setInterval(()=>{
+		//timer management
+		timer+=0.04;
+		clear(); // clear canvas 
+		drawImage(backgroundImg, 0, 0, canvas.width, canvas.height);
+		drawHUD(); // draw timer and score
+		drawFood(food.isStuck, foodImg);
+		drawPets();
+		drawPoops();
+		makeSupports();
+		//check gameover
+		if (gameOver(score,food.hp)) {	
+			console.log("game over");	
+			clearInterval(gameInv);		
+			reset();
+		}
+		// cycle from sprite png 
+		cycle = (cycle+1) % cycleSize;
+	}, 60);
+}

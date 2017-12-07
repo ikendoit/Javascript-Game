@@ -4,6 +4,7 @@
 		0:	wipe all current poops
 		1:	wipe all current dogs
 		2:  Slow down all dogs
+		3:	restore HP
 	@param : int x, int y to draw
 	@param : food : the food object to keep track of
 */
@@ -13,7 +14,8 @@ let Support = function(x, y, food){
 	this.y = y;
 	this.option = Math.floor(Math.random()*4);
 	this.food = food;
-	this.radius = 6;
+	this.width = 30;
+	this.height = 30;
 	this.obtain = false;
 
 	this.getProperty = function(){
